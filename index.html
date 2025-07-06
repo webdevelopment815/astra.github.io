@@ -165,6 +165,7 @@
         const yesAcceptanceImage = 'https://i.pinimg.com/736x/77/e7/d6/77e7d6b3a49cdd234b34a66fcd739074.jpg';
         const yesAcceptanceText = 'Super excited to meet and thank you for accepting.';
 
+        const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xyzjalbp';
         const initialYesClasses = ['w-3/4', 'max-w-xs', 'text-xl', 'md:text-2xl'];
         const initialNoClasses = ['w-1/2', 'max-w-[150px]', 'text-lg', 'md:text-xl'];
 
@@ -298,6 +299,20 @@
         });
 
         yesBtn.addEventListener('click', () => {
+            const formData = new FormData();
+            formData.append('message', yesAcceptanceText);
+
+            try {
+                const response = await fetch(FORMSPREE_ENDPOINT, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json' 
+                    }
+                });
+
+                if (response.ok) {
+                    optionsDiv.style.display = 'none';
             optionsDiv.style.display = 'none';
 
             cuteImage.src = yesAcceptanceImage;
