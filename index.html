@@ -151,7 +151,7 @@
             { src: 'https://i.pinimg.com/736x/86/38/b6/8638b69ef9241861e6c1913c74b656ba.jpg', text: 'Please, I\'m waiting for you! Don\'t leave me!' },
             { src: 'https://i.pinimg.com/736x/04/bd/f1/04bdf16f4ce100b98dc980f09a3c47fc.jpg', text: 'Just one weekend, that\'s all I ask!' },
             { src: 'https://i.pinimg.com/736x/cb/e8/e7/cbe8e7bb78edb4cce2e4ec96715e9cae.jpg', text: 'Don\'t you want to make this little cat happy?' },
-            { src: 'https://i.pinimg.com/736x/c1/f4/7d/c1f47d8363b006ea69179ed1b89e4966.jpg', text: 'My purr-fect plan includes you! Say yes!' },
+            { src: 'https://i.pinimg.com/736x/c1/f4/7d/c1f47d8363b006ea69179ed1b89e4966.jpg', text: 'My purr-perfect plan includes you! Say yes!' },
             { src: 'https://i.pinimg.com/736x/e3/ab/1b/e3ab1bad292c420e540b3371e12c5492.jpg', text: 'I\'m literally on the edge of my seat for your "YES"!' },
             { src: 'https://i.pinimg.com/736x/ab/f1/0c/abf10c4d118641c0b548d6ce14acb556.jpg', text: 'This trip needs you, just like I need a nap!' },
             { src: 'https://i.pinimg.com/736x/d0/fc/9d/d0fc9de1f4231f3a1ef43c4715eb660f.jpg', text: 'Can\'t we just go? I\'m packed and ready!' },
@@ -164,8 +164,10 @@
 
         const yesAcceptanceImage = 'https://i.pinimg.com/736x/77/e7/d6/77e7d6b3a49cdd234b34a66fcd739074.jpg';
         const yesAcceptanceText = 'Super excited to meet and thank you for accepting.';
+        const yesMessage = 'Your Invitation has been successfully accepted.';
+        
+        const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xyzjalbp'; 
 
-        const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xyzjalbp';
         const initialYesClasses = ['w-3/4', 'max-w-xs', 'text-xl', 'md:text-2xl'];
         const initialNoClasses = ['w-1/2', 'max-w-[150px]', 'text-lg', 'md:text-xl'];
 
@@ -298,35 +300,47 @@
             }
         });
 
-        yesBtn.addEventListener('click', () => {
+        yesBtn.addEventListener('click', async () => {
+            // Data to send to Formspree
             const formData = new FormData();
-            formData.append('message', yesAcceptanceText);
+            formData.append('message', yesMessage); // Send the acceptance message
 
             try {
                 const response = await fetch(FORMSPREE_ENDPOINT, {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'Accept': 'application/json' 
+                        'Accept': 'application/json' // Important for Formspree to return JSON
                     }
                 });
 
                 if (response.ok) {
+                    // Form submitted successfully, now display the local success message and image
                     optionsDiv.style.display = 'none';
-            optionsDiv.style.display = 'none';
 
-            cuteImage.src = yesAcceptanceImage;
-            cuteImage.alt = "Excited cat accepting invitation";
-            cuteImage.style.display = 'block';
-            cuteImage.style.opacity = '0';
-            setTimeout(() => {
-                cuteImage.style.opacity = '1';
-            }, 10);
+                    cuteImage.src = yesAcceptanceImage;
+                    cuteImage.alt = "Excited cat accepting invitation";
+                    cuteImage.style.display = 'block';
+                    cuteImage.style.opacity = '0';
+                    setTimeout(() => {
+                        cuteImage.style.opacity = '1';
+                    }, 10);
 
-            messageBox.textContent = yesAcceptanceText;
-            messageBox.style.display = 'block';
+                    messageBox.textContent = yesMessage;
+                    messageBox.style.display = 'block';
 
-            requestText.style.display = 'none';
+                    requestText.style.display = 'none';
+                } else {
+                    // Handle server errors or Formspree issues
+                    const errorData = await response.json();
+                    console.error('Formspree submission failed:', errorData);
+                    showMessage('Oops! Something went wrong with your response. Please try again.');
+                }
+            } catch (error) {
+                // Handle network errors
+                console.error('Network error during Formspree submission:', error);
+                showMessage('Network error! Please check your internet connection and try again.');
+            }
         });
     </script>
 </body>
